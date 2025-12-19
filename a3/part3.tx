@@ -1,0 +1,31 @@
+ // part 3
+ 
+ // 1 node.js event loop
+
+ it's a mechanism the let node.js handle i/o by offloading opartions
+
+ // 2 libuv
+
+ it's a c library that take requests from event loop, handle and excute a callback to it and give it to the tread or event loop to add it to the event queue.
+
+ // 3 
+ it follow a patern of propert that it excute :
+    a - micro operations in order of property :
+        1- high property operations (next functions)
+        2- low property operations
+     ** if there are 2 operations of the same property it excute them by order
+
+    b- macro operations in order of phases :
+        1- time phase 
+        2- i/o phase
+        3-poll phase 
+        4- check phase
+        5- close phase
+
+// 4
+a call_stack : excute operation in lifo order ( last in first out ) and it restors the excutions of the main phase operations.
+b event_queue : excute operations in fifo order ( first in first out) and it stores the requests in this order.
+c event loop : excute opertions in ortder of macto and micro operations , phases operation and it's done to the callbck ofthe requests thats in the event_queue.
+
+// 5 
+it does not wait for opertions to be excuted if there a task that will need a time it pu it in the event queue and kepp excutions the code then it keep going to the event queue to see if ther is any callback can be excuted from the event queue.
