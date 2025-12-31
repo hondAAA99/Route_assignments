@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "nodemon": "^3.1.11",
+    "sql2": "^0.0.1"
+  },
+  "name": "route_assignments",
+  "version": "1.0.0",
+  "description": "",
+  "main": "a5.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon a5.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hondAAA99/Route_assignments.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hondAAA99/Route_assignments/issues"
+  },
+  "homepage": "https://github.com/hondAAA99/Route_assignments#readme"
+}
