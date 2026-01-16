@@ -2,11 +2,11 @@
   "name": "a4",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
-  "type" : "module",
+  "main": "src/a4.js",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node src/a4.js"
   },
   "author": "",
   "license": "ISC",
