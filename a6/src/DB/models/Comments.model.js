@@ -1,33 +1,26 @@
 import { DataTypes, Model } from "sequelize";
 import { Users } from "./users.model.js";
-
+import { sequelize } from "../connection.js";
 import { Posts } from "./posts.model.js";
 
-class comments extends Model {}
+class Comments extends Model {}
 
-comments.init(
+Comments.init(
   {
     content: {
       type: DataTypes.TEXT,
     },
-    postId: {
-      type: DataTypes.INTEGER,
-    },
-    userId: {
-      type: DataTypes.INTEGER,
-    },
   },
   {
+    sequelize,
     modelName: "comments",
-  });
+    paranoid: false,
+  },
+);
 
-Posts.hasMany(comments, {
-  foreignKey: "postId",
-});
-comments.belongsTo(Posts);
-Users.hasMany(comments, {
-  foreignKey: "userId",
-});
-comments.belongsTo(Users);
+Posts.hasMany(Comments);
+Comments.belongsTo(Posts);
+Users.hasMany(Comments);
+Comments.belongsTo(Users);
 
-export { comments };
+export { Comments };

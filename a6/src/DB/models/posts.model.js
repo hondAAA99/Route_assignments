@@ -1,5 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { Users } from "./users.model.js";
+import { sequelize } from "../connection.js";
+
 
 class Posts extends Model {}
 
@@ -11,19 +13,16 @@ Posts.init(
     content: {
       type: DataTypes.TEXT,
     },
-    userId: {
-      type: DataTypes.INTEGER,
-    },
+    userId : DataTypes.INTEGER
   },
   {
-    paranoid : true ,
+    sequelize,
     modelName: "posts",
+    paranoid : true 
   }
 );
 
-Users.hasMany(Posts, {
-  foreignKey: "userId",
-});
-Posts.belongsTo(Users);
+Users.hasMany(Posts);
+Posts.belongsTo(Users,{foreignKey : 'userId'});
 
 export { Posts };

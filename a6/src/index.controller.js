@@ -1,21 +1,27 @@
-import express from 'express'
-import { check_connection, check_sync } from './DB/connection.js';
+import express from "express";
+import { check_connection, check_sync } from "./DB/connection.js";
+import { usersRouter } from "./modules/Users/users.controller.js";
+import { PostsRouter } from "./modules/Posts/Posts.controller.js";
+import { CommentRouter } from "./modules/Comments/comments.controller.js";
 const app = express();
 const port = 3000;
 
+const bootstrap = async () => {
+  app.use(express.json());
+  await check_connection();
+  await check_sync();
 
-const bootstrap = ()=>{
+  app.use("/user", usersRouter);
+  app.use("/post", PostsRouter);
+  app.use("/comment", CommentRouter);
 
-    app.use(express.json());
-    check_connection(); check_sync();
+  app.all("/{*demo}", (req, res) => {
+    res.send("Hello server!");
+  });
 
-    app.get('/{*demo}', (req, res) => {
-      res.send('Hello World!');
-    });
-    
-    app.listen(port, () => {
-      console.log(`Example app listening on port ${port}`);
-    });
-}
+  app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
+  });
+}; 
 
-export {bootstrap}
+export { bootstrap };
