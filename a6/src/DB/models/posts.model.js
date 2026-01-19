@@ -13,7 +13,7 @@ Posts.init(
     content: {
       type: DataTypes.TEXT,
     },
-    userId : DataTypes.INTEGER
+    user_Id : DataTypes.INTEGER
   },
   {
     sequelize,
@@ -23,6 +23,6 @@ Posts.init(
 );
 
 Users.hasMany(Posts);
-Posts.belongsTo(Users,{foreignKey : 'userId'});
+Posts.belongsTo(Users,{foreignKey : 'user_Id'});
 
 export { Posts };

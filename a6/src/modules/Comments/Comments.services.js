@@ -1,11 +1,11 @@
-import { sequelize } from "../../DB/connection.js";
 import { Comments } from "../../DB/models/Comments.model.js";
 import { Posts } from "../../DB/models/posts.model.js";
 import { Users } from "../../DB/models/users.model.js";
+import { Model, Op } from "sequelize";
 
 const createBulk = async (req, res, next) => {
   try {
-    const comments = await Comments.createBulk([req.body[0]]);
+    const comments = await Comments.bulkCreate(req.body);
     res.status(200).json({ message: "coments created" });
   } catch (err) {
     if (err) {
@@ -16,18 +16,24 @@ const createBulk = async (req, res, next) => {
 };
 
 const updateComment = async (req, res, next) => {
-  let { commentId } = req.params;
-  let { updated, userId } = req.body;
+  let commentId = req.params.commentId;
+  let { updated, UserId } = req.body;
+
   try {
-    await Comments.update(
+    let post = await Comments.update(
       { content: updated },
       {
         where: {
           id: commentId,
-          UserId: userId,
+          UserId: UserId,
         },
       },
     );
+
+    if (!post[0])
+      return res
+        .status(400)
+        .json({ message: "you are not authorized to edit this post" });
 
     return res.status(201).json({ message: "updated comment successed" });
   } catch (err) {
@@ -39,13 +45,14 @@ const updateComment = async (req, res, next) => {
 };
 
 const findOrCreate = async (req, res, next) => {
-  let { userId, postId, content } = req.body;
+  let { UserId, postId, content } = req.body;
   try {
     let comment = await Comments.findOrCreate({
       where: {
-        UserId: userId,
+        UserId: UserId,
         postId: postId,
       },
+      defaults: content,
     });
     res.status(201).json({ comment: comment });
   } catch (err) {
@@ -75,40 +82,56 @@ const searchForWords = async (req, res, next) => {
   }
 };
 
-const newestComments = async (req,res,next)=>{
-    let {postId} = req.params ;
+const newestComments = async (req, res, next) => {
+  let { postID } = req.params;
 
-
-    try {
-    const comments = await Comments.findByPk((postId),{
+  try {
+    const comments = await Comments.findAll({
+      where: {
+        postId: postID,
+      },
       order: ["createdAt"],
       limit: 3,
     });
-    return res.status(200).json({comments : comments})
-    }
-    catch(err){
-        if ( err ) {
-            onsole.log(err);
-            return res.status(404).json({message : 'failled to retrive data'})
-        }
-    }
-}
+    console.log(postID);
 
-const getComment = async (req,res,next)=>{
-    let {commentId} = req.params ;
-    try {
-        let comment = Comments.findByPk(commentId,{
-            include : Users,
-            include : Posts
-        });
-        return res.status(201).json({ message: comment });
-    }catch (err){
-        if (err){
-            console.log(err);
-            return res.status(404).json({message : 'failed the operation'})
-        }
+    return res.status(200).json({ comments: comments });
+  } catch (err) {
+    if (err) {
+      onsole.log(err);
+      return res.status(404).json({ message: "failled to retrive data" });
     }
-}
+  }
+};
+
+const getComment = async (req, res, next) => {
+  let commentId = req.params.commentId;
+  try {
+    let comment = await Comments.findOne({
+      where: {
+        id: commentId,
+      },
+      include: [
+        {
+          model : Users,
+          attributes : ['id','name','email']
+        },
+        {
+          model : Posts,
+        }
+      ],
+    });
+    console.log(comment);
+    
+
+    return res.status(201).json({ message: comment });
+  } catch (err) {
+    if (err) {
+      console.log(err);
+      return res.status(404).json({ message: "failed the operation" });
+    }
+  }
+};
 
 export {
   createBulk,

@@ -14,13 +14,14 @@ Comments.init(
   {
     sequelize,
     modelName: "comments",
-    paranoid: false,
+    paranoid: true,
   },
 );
 
-Posts.hasMany(Comments);
-Comments.belongsTo(Posts);
-Users.hasMany(Comments);
-Comments.belongsTo(Users);
+Posts.hasMany(Comments, {foreignKey : 'postID'});
+Comments.belongsTo(Posts, { foreignKey: "postID" });
+
+Users.hasMany(Comments, { foreignKey: "userID" });
+Comments.belongsTo(Users, { foreignKey: "userID" });
 
 export { Comments };

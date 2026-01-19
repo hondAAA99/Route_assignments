@@ -12,11 +12,11 @@ import {
 const CommentRouter = Router();
 
 CommentRouter.post('/',createBulk)
-CommentRouter.post('/:commentId',updateComment)
-CommentRouter.patch('/findOrCreate',findOrCreate)
+CommentRouter.patch('/:commentId',updateComment)
+CommentRouter.post('/findOrCreate',findOrCreate)
 CommentRouter.get('/search',searchForWords)
 CommentRouter.get('/newest/:postID',newestComments)
-CommentRouter.get("details/:commentId", getComment);
+CommentRouter.get("/details/:commentId", getComment);
 
 
 export { CommentRouter }
