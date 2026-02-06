@@ -224,19 +224,14 @@ const aggr3 = async (req, res, next) => {
         {
           $match: {
             year: {
-              $gt: 2000,
-            },
-          },
-        },
+              $gt: 2000
+            }}},
         {
           $project: {
             title: 1,
             author: 1,
             year: 1,
-          },
-        },
-      ])
-      .toArray();
+          }}]).toArray();
     res.status(201).json({ mesage: "succeded" , result : result});
   } catch (err) {
     if (err) {
