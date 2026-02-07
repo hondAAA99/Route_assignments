@@ -1,66 +1,72 @@
 import { model } from "mongoose";
 
-export const insertOne = async (model ,data = {} , options = {} )=>{
-    return await model.create(data,options);
-}
+export const insertOne = async (model, data = {}, options = {}) => {
+  const newUser = await new model(data);
+  await newUser.save();
+};
 
-export const findOne = async(model ,data = {} ,options = {} )=>{
-    return await model.findOne(data,options)
-}
+export const findOne = async (model, data = {}, options = {}) => {
+  return await model.findOne(data, options);
+};
 
-export const update = async(model,id,update={},options={})=>{
-    return await model.findByIdAndUpdate(id,update, options);
-}
+export const update = async (model, id, update = {}, options = {}) => {
+  return await model.findByIdAndUpdate(id, update, options);
+};
 
-export const userDelete = async(model,id)=>{
-    return await model.findByIdAndDelete(id);
-}
+export const userDelete = async (model, id) => {
+  return await model.findByIdAndDelete(id);
+};
 
-export const findById = async(model,id)=>{
-    return await model.findById(id);
-}
+export const findById = async (model, id) => {
+  return await model.findById(id);
+};
 
-export const deleteMany = async(model)=>{
-    return await model.deleteMany({});
-}
+export const updateMany = async (
+  model,
+  filter = {},
+  update = {},
+  options = {},
+) => {
+  return await model.Update(filter, update, options);
+};
 
-export const insertMany = async(model,filter,body)=>{
-    return await model.insertMany(filter,body);
-}
+// export const replace = async (
+//   model,
+//   filter = {},
+//   update = {},
+//   options = {},
+// ) => {
+//   return await model.replaceOne(filter, update, options).then((v) => {
+//     console.log(v);
+//   });
+// };
 
-export const updateMany = async (model,filter = {},body = {},options = {})=>{
-    return await model.updateMany(filter,body,options)
-}
-
-export const deleteNById = async (model,id)=>{
-    return await model.deleteById(id);
-}
-
-export const pageination = async (model,limit,page)=>{
-    return await model.find({},{ skip : page, limit }).sort('-createdAt')
-}
-
-export const getNbyId = async(model,id)=>{
-    return await model.findById(id)
-}
-
-export const getNbyContent = async(model,content)=>{
-    return await model.find({
-        content
-    })
-}
-
-export const getNAllFiltered = async(model,id)=>{
-    return await model.findById(id).select('title _id createdAt').populate('user')
-}
-
-// export const aggr1 = async (model)=>{
-//     return await model.aggregate([
-//         {},
-//         {},
-//     ]);
+// export const replaceTitles = async (model,filter,data,options)=>{
+//     // return await model.updateMany(filter,data,options);
 // }
 
-export const findOneAndUpdate = async(model,filter,update,options)=>{
-    return await model.findOneAndUpdate(filter,update,options);
-}
+export const deleteNoteById = async (model, filter) => {
+  return await model.deleteOne(filter);
+};
+
+export const pagination = async (model, filter, page, limit, options) => {
+  return await model.find(filter, options).skip(page).limit(limit);
+};
+
+export const joinUserInfo = async (model, model2, filter) => {
+  return await model.find(filter).populate(model2);
+};
+
+export const deleteAll = async (model, filter) => {
+  return await model.deleteMany(filter);
+};
+
+export const aggregation = async (model, filter) => {
+  return await model.aggregate([
+    {
+      $match: {
+        filter,
+      }
+    },
+  ]);
+};

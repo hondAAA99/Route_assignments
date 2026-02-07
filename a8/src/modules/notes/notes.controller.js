@@ -2,27 +2,27 @@ import { Router } from "express";
 
 import {
   createNote,
-  updateNote,
-  updateAll,
-  updateAllTitles,
-  deleteNoteById,
+  updateOne,
+  deleteNote,
   pageinationNotes,
-  getNoteById,
+  getById,
   getByContent,
-  getAllFiltered,
+  allNotesWithUserdata,
+  deleteAllNotes,
+  aggregation,
 } from "./notes.services.js";
 const noteRouter = Router();
 
 noteRouter.post("/", createNote);
-noteRouter.patch('/:noteid',updateNote)
-noteRouter.put('/replace/:noteid',updateAll)
-noteRouter.patch('/all',updateAllTitles)
-noteRouter.delete('/noteid',deleteNoteById)
-noteRouter.get('/pagination-sort',pageinationNotes)
-noteRouter.get('/id',getNoteById)
+noteRouter.patch("/:noteid", updateOne);
+// noteRouter.put("/replace/:noteid", replaceDoc);
+// noteRouter.patch("/all", updateAllTitles);
+noteRouter.delete("/:noteid", deleteNote);
+noteRouter.get("/pagination-sort", pageinationNotes);
+noteRouter.get("/:noteId", getById);
 noteRouter.get("/note-by-content", getByContent);
-noteRouter.get("/note-with-user", getAllFiltered);
-// noteRouter.get('/aggregate')
-// noteRouter.delete('/notes')
+noteRouter.get("/note-with-user", allNotesWithUserdata);
+// // noteRouter.get('/aggregate',aggregation)
+noteRouter.delete('/notes',deleteAllNotes)
 
-export {noteRouter}
+export { noteRouter };
