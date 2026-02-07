@@ -1,5 +1,4 @@
 import mongoose, { Schema, model } from "mongoose";
-import { STRING } from "sequelize";
 
 const noteSchema = Schema(
   {

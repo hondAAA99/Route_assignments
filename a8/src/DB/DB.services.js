@@ -25,7 +25,7 @@ export const deleteMany = async(model)=>{
 }
 
 export const insertMany = async(model,filter,body)=>{
-    return await model.insertMany(body);
+    return await model.insertMany(filter,body);
 }
 
 export const updateMany = async (model,filter = {},body = {},options = {})=>{
@@ -60,3 +60,7 @@ export const getNAllFiltered = async(model,id)=>{
 //         {},
 //     ]);
 // }
+
+export const findOneAndUpdate = async(model,filter,update,options)=>{
+    return await model.findOneAndUpdate(filter,update,options);
+}

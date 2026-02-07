@@ -3,6 +3,7 @@ import { response } from "../../common/response.js";
 import {
   deleteMany,
   deleteNById,
+  findOneAndUpdate,
   getNbyContent,
   getNbyId,
   insertMany,
@@ -26,12 +27,13 @@ const createNote = async (req, res, next) => {
 const updateNote = async (req, res, next) => {
   let authHeders = req.headers["authorization"];
   let token = authHeders.split(" ")[1];
-  let payload = jwt.verify(token, "secret");
+  let payload = jwt.verify(token, "secret"); // userid
+
   const { title , content } = req.body;
   response(res, 201, {
-    data: update(
+    data: findOneAndUpdate(
       notesModel,
-      payload.data,
+      {userId : payload.data.toString() },
       {
         title,
         content,
@@ -48,7 +50,9 @@ const updateAll = async (req, res, next) => {
   let token = authHeders.split(" ")[1];
   let payload = jwt.verify(token, "secret");
   deleteMany(notesModel);
-  response(res, 201, { data: insertMany(notesModel, req, body) });
+  response(res, 201, { data: updateMany(notesModel,{ userId : payload.data.toString()}, req.body) }, {
+    new : true 
+  });
 };
 
 const updateAllTitles = async (req, res, next) => {
