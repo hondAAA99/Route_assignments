@@ -1,23 +1,28 @@
 import jwt from "jsonwebtoken";
 import { response } from "../../common/response.js";
 import {
-  findById,
+  findId,
   insertOne,
   update,
-  // replaceTitles,
   deleteNoteById,
   pagination,
   findOne,
   joinUserInfo,
+  replace,
+  updateMTitles,
+  findByContent,
   aggregation,
+  deleteAll,
 } from "../../DB/DB.services.js";
 import { notesModel } from "../../DB/models/notes.js";
 import { model } from "mongoose";
 
 function verify_token(req) {
   try {
-    let authHeders = req.headers["authorization"];
+    let authHeders = req.headers.authorization;
+    console.log(req.headers);
     let token = authHeders.split(" ")[1];
+    
     let payload = jwt.verify(token, "secret");
 
     return payload;
@@ -27,20 +32,16 @@ function verify_token(req) {
 }
 
 async function verfiy_user(userId, noteid) {
-  let note = findById(notesModel, noteid);
-
-  return await note
-    .then((v) => {
-      if (userId.toString() != v.userId.toString())
-        throw { message: "you are not authorized", cause: 401 };
-    })
-    .catch((err) => {
-      throw { message: "note not found", cause: 402 };
-    });
+  const note = await findId(notesModel, noteid);
+  if (note.userId.toString() == userId) {
+    return note;
+  }
+  throw new Error("you are not authorized to access this note", { cause: 301 });
 }
 
 export const createNote = async (req, res, next) => {
   let payload = verify_token(req);
+
   let { title, content } = req.body;
   let result = await insertOne(notesModel, {
     title,
@@ -63,42 +64,40 @@ export const updateOne = async (req, res, next) => {
   });
 };
 
-// export const replaceDoc = async (req, res, next) => {
-//   let payload = verify_token(req);
-//   let { noteid } = req.params;
-//   let { title, content } = req.body;
-//   let userId = payload.data;
-//   verfiy_user(userId, noteid);
-//   console.log('***************');
+export const replaceDoc = async (req, res, next) => {
+  let payload = verify_token(req);
+  let { noteid } = req.params;
+  let { title, content, userId } = req.body[0];
+  let uId = payload.data;
+  verfiy_user(uId, noteid);
+  let result = replace(notesModel, { id: noteid }, { title, content, userId });
 
-//   let result = replace(notesModel, {id : noteid}, {
-//     id :
-//   }, {new : true});
+  response(res, 201, result);
+};
 
-//   result.then((v) => {
-//     response(res, 200, v);
-//   });
-// };
+export const updateAllNote = async (req, res) => {
+  let payload = verify_token(req);
+  let { title } = req.body;
 
-// export const updateAllTitles = async (req, res, next) => {
-
-//   let payload = verify_token(req);
-//   let userId = payload.data;
-//   let { title } = req.body;
-// };
+  let result = updateMTitles(
+    notesModel,
+    { userId: payload.data },
+    { title },
+    { new: true },
+  );
+  response(res, 201, result);
+};
 
 export const deleteNote = async (req, res, next) => {
   let payload = verify_token(req);
 
-  let { noteid } = req.params;
+  let { noteId } = req.params;
 
-  verfiy_user(payload.data, noteid);
+  await verfiy_user(payload.data, noteId);
 
-  let result = deleteNoteById(notesModel, { id: noteid });
+  let result = await deleteNoteById(notesModel, { id: noteId });
 
-  result.then((v) => {
-    response(res, 201, v);
-  });
+  response(res, 201, result);
 };
 
 export const pageinationNotes = async (req, res, next) => {
@@ -115,52 +114,41 @@ export const getById = async (req, res, next) => {
   let payload = verify_token(req);
   let userId = payload.data;
   let { noteId } = req.params;
-  verfiy_user(userId, noteId);
-  let result = findOne(notesModel, { noteId });
-  result.then((v) => {
-    response(res, 201, v);
-  });
+  await verfiy_user(userId, noteId);
+  let result = await findOne(notesModel, { _id: noteId });
+  response(res, 201, result);
 };
 
-export const getByContent = async (req, res, next) => {
+export const getBycontent = async (req, res, next) => {
   let payload = verify_token(req);
   let userId = payload.data;
   let { content } = req.query;
-  let result = findOne(notesModel, { content });
-  result.then((v) => {
-    response(res, 201, v);
-  });
+  let result = await findByContent(notesModel, { userId, content });
+  response(res, 201, result);
 };
 
-export const allNotesWithUserdata = async(req,res,next)=>{  
+export const allNotesWithUserdata = async (req, res, next) => {
   let payload = verify_token(req);
   let userId = payload.data;
-  let result = joinUserInfo(notesModel, 'users' , {userId});
+  let result = await joinUserInfo(notesModel, { userId });
+  response(res, 201, result);
+};
 
-  result.then((v)=>{
-    response(res,201,v)
-  })
-}
-
-export const aggregation = async(req,res,next)=>{
+export const aggregate = async (req, res, next) => {
   let payload = verify_token(req);
   let userId = payload.data;
-  let title = req.query;
+  let { title } = req.query;
+  let note = aggregation(notesModel, { title, userId });
+  verfiy_user(userId, note._id);
+  response(res, 201, note);
+};
 
-  let result = aggregation(model,{userId})
-
-  result.then((v)=>{
-    response(res,201,v);
-  })
-}
-
-export const deleteAllNotes = async(req,res,next)=>{
+export const delAllNotes = async (req, res, next) => {
   let payload = verify_token(req);
+  console.log(payload);
+  
   let userId = payload.data;
+  let result = deleteAll(notesModel,{userId});
 
-  let result = deleteAll(model,{userId});
-
-  result.then((v)=>{
-    response(res, 201, v);
-  })
-}
+  response(res,201,'deleted');
+};

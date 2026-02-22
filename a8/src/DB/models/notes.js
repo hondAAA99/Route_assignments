@@ -13,20 +13,16 @@ const noteSchema = Schema(
     content: {
       type: String,
     },
-    title: {
-      type: String,
-      ref: "user",
-      require: true,
-    },
     userId: {
-      type: Schema.Types.ObjectId,
-      require: true,
+      type: Schema.Types.ObjectId, 
+      required: true,
       ref: "user",
     },
   },
   {
-    timeStamps: true,
+    timestamps: true,
     strictQuery: true,
+    strictPopulate :false ,
   },
 );
 

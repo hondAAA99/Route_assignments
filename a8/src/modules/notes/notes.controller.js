@@ -3,26 +3,26 @@ import { Router } from "express";
 import {
   createNote,
   updateOne,
+  replaceDoc,
+  updateAllNote,
   deleteNote,
   pageinationNotes,
   getById,
-  getByContent,
+  getBycontent,
   allNotesWithUserdata,
-  deleteAllNotes,
-  aggregation,
 } from "./notes.services.js";
 const noteRouter = Router();
 
 noteRouter.post("/", createNote);
-noteRouter.patch("/:noteid", updateOne);
-// noteRouter.put("/replace/:noteid", replaceDoc);
-// noteRouter.patch("/all", updateAllTitles);
-noteRouter.delete("/:noteid", deleteNote);
+noteRouter.delete("/deleteAll", allNotesWithUserdata);
+noteRouter.patch("/all", updateAllNote);
 noteRouter.get("/pagination-sort", pageinationNotes);
-noteRouter.get("/:noteId", getById);
-noteRouter.get("/note-by-content", getByContent);
+noteRouter.put("/replace/:noteid", replaceDoc);
+noteRouter.get("/note-by-content", getBycontent);
 noteRouter.get("/note-with-user", allNotesWithUserdata);
-// // noteRouter.get('/aggregate',aggregation)
-noteRouter.delete('/notes',deleteAllNotes)
+noteRouter.post("/aggr", allNotesWithUserdata);
+noteRouter.patch("/:noteid", updateOne);
+noteRouter.delete("/:noteId", deleteNote);
+noteRouter.get("/:noteId", getById);
 
 export { noteRouter };
